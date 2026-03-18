@@ -1,12 +1,13 @@
 import csv
-from pathlib import Path
-from typing import Generator
 from contextlib import contextmanager
+from pathlib import Path
+from typing import Generator, Sequence
 
 from .config import CSV_ENCODING, REQUIRED_COLUMNS
 from .logging import get_logger
 
 logger = get_logger(__name__)
+
 
 def validate_file_exists(file_path: str | Path) -> Path:
     """
@@ -23,6 +24,7 @@ def validate_file_exists(file_path: str | Path) -> Path:
     if not path.is_file():
         raise RuntimeError(f"Path is not a file `{str(path)}`")
     return path
+
 
 def validate_files_exist(file_paths: list[str | Path]) -> list[Path]:
     """
@@ -50,6 +52,7 @@ def validate_files_exist(file_paths: list[str | Path]) -> list[Path]:
             raise RuntimeError(error_message)
     return paths
 
+
 @contextmanager
 def open_csv_file(file_path: str | Path, mode: str = "r") -> Generator:
     """
@@ -75,6 +78,7 @@ def open_csv_file(file_path: str | Path, mode: str = "r") -> Generator:
     except Exception as e:
         raise RuntimeError(f"Unexpected error: {e}", str(path))
 
+
 def read_csv_file(file_path: str | Path) -> list[dict]:
     """
     Reads a CSV file and returns a list of dictionaries.
@@ -89,7 +93,7 @@ def read_csv_file(file_path: str | Path) -> list[dict]:
 
     logger.debug(f"Reading file: {str(path)}")
 
-    with open_csv_file(path, 'r') as f:
+    with open_csv_file(path, "r") as f:
         reader = csv.DictReader(f)
 
         if not reader.fieldnames:
@@ -116,12 +120,12 @@ def read_csv_file(file_path: str | Path) -> list[dict]:
     return data
 
 
-def read_csv_files(file_paths: list[str | Path]) -> list[dict]:
+def read_csv_files(file_paths: Sequence[str | Path]) -> list[dict]:
     """
     Reads multiple CSV files and returns a list of dictionaries.
 
     :param file_paths: List of file paths
-    :type file_paths: list[str | Path]
+    :type file_paths: Sequence[str | Path]
     :return: List of dictionaries
     :rtype: list[dict]
     """
@@ -144,6 +148,7 @@ def read_csv_files(file_paths: list[str | Path]) -> list[dict]:
 
     return all_data
 
+
 def validate_data(data: dict) -> bool:
     """
     Validates the data in the row.
@@ -165,6 +170,4 @@ def validate_data(data: dict) -> bool:
     if any(v < 0 for v in [data["coffee_spent"], data["sleep_hours"], data["study_hours"]]):
         return False
 
-    if not 0 <= data["sleep_hours"] <= 24:
-        return False
-    return True
+    return bool(0 <= data["sleep_hours"] <= 24)

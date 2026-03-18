@@ -2,16 +2,16 @@ from tabulate import tabulate
 
 from .config import FLOAT_ROUNDING
 from .logging import get_logger
-from .models import StudentStatistics, StudentRecord
-from .processors import DataProcessor, PROCESSORS
+from .models import StudentRecord, StudentStatistics
+from .processors import PROCESSORS, DataProcessor
 
 logger = get_logger(__name__)
+
 
 class ReportGenerator:
 
     def __init__(self):
         self._processors = PROCESSORS
-
 
     @staticmethod
     def convert_to_report(data: list[dict]) -> dict[str, StudentStatistics]:
@@ -45,7 +45,9 @@ class ReportGenerator:
         """
         return list(self._processors.keys())
 
-    def generate_report(self, data: dict[str, StudentStatistics], report_type: str) -> list[dict] | None:
+    def generate_report(
+        self, data: dict[str, StudentStatistics], report_type: str
+    ) -> list[dict] | None:
         """
         Generate report
 
@@ -57,9 +59,11 @@ class ReportGenerator:
         :rtype: list[dict] | None
         """
         if report_type not in self._processors:
-            raise ValueError(f"Unknown report type `{report_type}` (available reports: {', '.join(self.get_available_reports())})")
+            raise ValueError(
+                f"Unknown report type `{report_type}` (available reports: {', '.join(self.get_available_reports())})"
+            )
 
-        processor_cls = self._processors[report_type]['cls']
+        processor_cls = self._processors[report_type]["cls"]
         processor: DataProcessor = processor_cls()
         return processor.process(data)
 
@@ -86,9 +90,9 @@ class ReportGenerator:
 
             table = tabulate(
                 report_data,
-                headers=self._processors[report_type]['headers'],
-                tablefmt='grid',
-                floatfmt=f'.{FLOAT_ROUNDING}f'
+                headers=self._processors[report_type]["headers"],
+                tablefmt="grid",
+                floatfmt=f".{FLOAT_ROUNDING}f",
             )
 
             print(table)

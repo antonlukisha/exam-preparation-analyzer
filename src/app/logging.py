@@ -59,7 +59,6 @@ def setup_logging(verbose: bool = False) -> None:
         }
         log_level = level_map.get(LOGGER_LEVEL.upper(), logging.INFO)
 
-
         root_logger.setLevel(log_level)
         root_logger.handlers.clear()
         root_logger.disabled = False
@@ -91,4 +90,3 @@ def get_logger(name: str) -> logging.Logger:
     :rtype: logging.Logger
     """
     return logging.getLogger(name)
-

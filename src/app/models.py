@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from statistics import median
 
+
 @dataclass
 class StudentRecord:
     student: str
@@ -33,9 +34,10 @@ class StudentRecord:
         if self.coffee_spent < 0:
             raise ValueError("`coffee_spent` not be negative")
         if self.sleep_hours < 0 or self.sleep_hours > 24:
-                raise ValueError("`sleep_hours` must be in range [0, 24]")
+            raise ValueError("`sleep_hours` must be in range [0, 24]")
         if self.study_hours < 0:
             raise ValueError("`study_hours` not be negative")
+
 
 @dataclass
 class StudentStatistics:
@@ -61,4 +63,4 @@ class StudentStatistics:
         :return: median
         :rtype: int
         """
-        return median(self.coffee_spent_values)
+        return int(median(self.coffee_spent_values))

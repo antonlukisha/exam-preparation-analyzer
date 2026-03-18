@@ -17,6 +17,7 @@ class DataProcessor(ABC):
         """
         pass
 
+
 class MedianCoffeeProcessor(DataProcessor):
 
     def process(self, data: dict[str, StudentStatistics]) -> list[dict]:
@@ -28,14 +29,17 @@ class MedianCoffeeProcessor(DataProcessor):
         :return: List of dictionaries containing student and median coffee consumption
         :rtype: list[dict]
         """
-        result = [{'student': student, 'median_coffee': stats.median_coffee} for student, stats in data.items()]
-        result.sort(key=lambda x: x['median_coffee'], reverse=True)
+        result = [
+            {"student": student, "median_coffee": stats.median_coffee}
+            for student, stats in data.items()
+        ]
+        result.sort(key=lambda x: x["median_coffee"], reverse=True)
         return result
 
 
 PROCESSORS = {
-    'median-coffee': {
-        'cls': MedianCoffeeProcessor,
-        'headers': {'student': 'student', 'median_coffee': 'median_coffee'}
+    "median-coffee": {
+        "cls": MedianCoffeeProcessor,
+        "headers": {"student": "student", "median_coffee": "median_coffee"},
     }
 }
