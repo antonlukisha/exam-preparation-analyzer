@@ -40,8 +40,15 @@ profile = "black"
 line_length = 100
 
 [tool.ruff]
-line-length = 100
 target-version = "py313"
+line-length = 150
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.ruff.lint]
 select = ["E", "F", "I", "B", "C4", "ARG", "SIM"]
 ignore = []
 

@@ -32,7 +32,7 @@ class ReportGenerator:
                     student_stats[record.student] = StudentStatistics(record.student)
                 student_stats[record.student].add_record(record)
         except Exception as e:
-            raise ValueError(f"Error converting data to report {str(e)}")
+            raise ValueError(f"Error converting data to report {str(e)}") from None
 
         return student_stats
 

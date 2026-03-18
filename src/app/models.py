@@ -26,9 +26,9 @@ class StudentRecord:
                 exam=data["exam"],
             )
         except KeyError as e:
-            raise KeyError(f"Expected required field {str(e)}")
+            raise KeyError(f"Expected required field {str(e)}") from None
         except ValueError as e:
-            raise ValueError(f"Incorrect value {str(e)}")
+            raise ValueError(f"Incorrect value {str(e)}") from None
 
     def __post_init__(self) -> None:
         if self.coffee_spent < 0:

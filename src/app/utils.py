@@ -70,13 +70,13 @@ def open_csv_file(file_path: str | Path, mode: str = "r") -> Generator:
         with open(path, mode, encoding=CSV_ENCODING) as f:
             yield f
     except FileNotFoundError:
-        raise FileNotFoundError(f"File not found `{str(path)}`")
+        raise FileNotFoundError(f"File not found `{str(path)}`") from None
     except PermissionError:
-        raise PermissionError(f"Not enough permissions to read the file `{str(path)}`")
+        raise PermissionError(f"Not enough permissions to read the file `{str(path)}`") from None
     except UnicodeDecodeError:
-        raise RuntimeError(f"File is not have needed encoding (expected {CSV_ENCODING})")
+        raise RuntimeError(f"File is not have needed encoding (expected {CSV_ENCODING})") from None
     except Exception as e:
-        raise RuntimeError(f"Unexpected error: {e}", str(path))
+        raise e
 
 
 def read_csv_file(file_path: str | Path) -> list[dict]:
