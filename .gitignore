@@ -10,15 +10,34 @@ __pycache__/
 venv/
 ENV/
 env/
+.venv/
 pip-log.txt
 pip-delete-this-directory.txt
+
+# Testing
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
 .tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Type checking
 .mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Linting
 .ruff_cache/
 .flake8
+.pylint.d
 
 # IDE
 .vscode/
@@ -26,15 +45,34 @@ htmlcov/
 *.swp
 *.swo
 *~
+.DS_Store
 
 # Data
 data/*
+!data/example.csv
 
 # Logs
 *.log
 logs/
+*.log.*
 
 # Build
 dist/
 build/
 *.egg-info/
+*.egg
+MANIFEST
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# My personal notes (optional)
+*.notes
+todo.txt
