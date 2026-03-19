@@ -3,6 +3,7 @@ from argparse import Namespace
 from unittest.mock import MagicMock, patch
 
 from app.cli import main, parse_arguments
+from app.config import DATA_PATH
 
 
 class TestParseArguments:
@@ -89,7 +90,8 @@ class TestMain:
         :return: nothing
         :rtype: None
         """
-        mock_validate_files.return_value = ["file1.csv"]
+        file_path = DATA_PATH / "file.csv"
+        mock_validate_files.return_value = [file_path]
         mock_read_csv.return_value = [{"student": "Иван Иванов", "coffee_spent": 100}]
         mock_generator = MagicMock()
         mock_report_generator_class.return_value = mock_generator
@@ -98,14 +100,14 @@ class TestMain:
 
         with patch("app.cli.parse_arguments") as mock_parse_args:
             mock_parse_args.return_value = Namespace(
-                files=["file1.csv"], report="median-coffee", verbose=False
+                files=["file.csv"], report="median-coffee", verbose=False
             )
 
             with patch.object(sys, "exit") as mock_exit:
                 main()
                 mock_setup_logging.assert_called_once_with(False)
-                mock_validate_files.assert_called_once_with(["file1.csv"])
-                mock_read_csv.assert_called_once_with(["file1.csv"])
+                mock_validate_files.assert_called_once_with([file_path])
+                mock_read_csv.assert_called_once_with([file_path])
                 mock_report_generator_class.convert_to_report.assert_called_once_with(
                     [{"student": "Иван Иванов", "coffee_spent": 100}]
                 )
@@ -139,14 +141,15 @@ class TestMain:
         :return: nothing
         :rtype: None
         """
-        mock_validate_files.return_value = ["file1.csv"]
+        file_path = DATA_PATH / "file.csv"
+        mock_validate_files.return_value = [file_path]
         mock_read_csv.return_value = [{"student": "Иван Иванов", "coffee_spent": 100}]
         mock_generator = MagicMock()
         mock_report_generator_class.return_value = mock_generator
 
         with patch("app.cli.parse_arguments") as mock_parse_args:
             mock_parse_args.return_value = Namespace(
-                files=["file1.csv"], report="median-coffee", verbose=True
+                files=["file.csv"], report="median-coffee", verbose=True
             )
 
             with patch.object(sys, "exit") as mock_exit:
@@ -173,12 +176,13 @@ class TestMain:
         :return: nothing
         :rtype: None
         """
-        mock_validate_files.return_value = ["file1.csv"]
+        file_path = DATA_PATH / "file.csv"
+        mock_validate_files.return_value = [file_path]
         mock_read_csv.return_value = []
 
         with patch("app.cli.parse_arguments") as mock_parse_args:
             mock_parse_args.return_value = Namespace(
-                files=["file1.csv"], report="median-coffee", verbose=False
+                files=["file.csv"], report="median-coffee", verbose=False
             )
 
             with patch("app.cli.setup_logging"), patch.object(sys, "exit") as mock_exit:
@@ -231,12 +235,13 @@ class TestMain:
         :return: nothing
         :rtype: None
         """
-        mock_validate_files.return_value = ["file1.csv"]
+        file_path = DATA_PATH / "file.csv"
+        mock_validate_files.return_value = [file_path]
         mock_read_csv.side_effect = ValueError("Invalid value in CSV")
 
         with patch("app.cli.parse_arguments") as mock_parse_args:
             mock_parse_args.return_value = Namespace(
-                files=["file1.csv"], report="median-coffee", verbose=False
+                files=["file.csv"], report="median-coffee", verbose=False
             )
 
             with patch("app.cli.setup_logging"), patch.object(sys, "exit") as mock_exit:
@@ -262,12 +267,13 @@ class TestMain:
         :return: nothing
         :rtype: None
         """
-        mock_validate_files.return_value = ["file1.csv"]
+        file_path = DATA_PATH / "file.csv"
+        mock_validate_files.return_value = [file_path]
         mock_read_csv.side_effect = KeyboardInterrupt()
 
         with patch("app.cli.parse_arguments") as mock_parse_args:
             mock_parse_args.return_value = Namespace(
-                files=["file1.csv"], report="median-coffee", verbose=False
+                files=["file.csv"], report="median-coffee", verbose=False
             )
 
             with patch("app.cli.setup_logging"), patch.object(sys, "exit") as mock_exit:
@@ -293,12 +299,13 @@ class TestMain:
         :return: nothing
         :rtype: None
         """
-        mock_validate_files.return_value = ["file1.csv"]
+        file_path = DATA_PATH / "file.csv"
+        mock_validate_files.return_value = [file_path]
         mock_read_csv.side_effect = Exception("Something unexpected")
 
         with patch("app.cli.parse_arguments") as mock_parse_args:
             mock_parse_args.return_value = Namespace(
-                files=["file1.csv"], report="median-coffee", verbose=False
+                files=["file.csv"], report="median-coffee", verbose=False
             )
 
             with patch("app.cli.setup_logging"), patch.object(sys, "exit") as mock_exit:
@@ -327,7 +334,8 @@ class TestMain:
         :return: nothing
         :rtype: None
         """
-        mock_validate_files.return_value = ["file1.csv", "file2.csv"]
+        file1_path, file2_path = DATA_PATH / "file1.csv", DATA_PATH / "file2.csv"
+        mock_validate_files.return_value = [file1_path, file2_path]
         mock_read_csv.return_value = [
             {"student": "Иван Иванов", "coffee_spent": 100},
             {"student": "Алексей Смирнов", "coffee_spent": 200},
@@ -342,5 +350,5 @@ class TestMain:
 
             with patch("app.cli.setup_logging"), patch.object(sys, "exit") as mock_exit:
                 main()
-                mock_validate_files.assert_called_once_with(["file1.csv", "file2.csv"])
+                mock_validate_files.assert_called_once_with([file1_path, file2_path])
                 mock_exit.assert_not_called()
