@@ -1,12 +1,16 @@
-import pytest
 from datetime import datetime
+
+import pytest
 
 from app.models import StudentRecord, StudentStatistics
 
 
 class TestStudentRecord:
 
-    def test_create_valid_record(self):
+    def test_create_valid_record(self) -> None:
+        """
+        Test creating a valid `StudentRecord` instance
+        """
         record = StudentRecord(
             student="Иван Петров",
             date=datetime(2024, 6, 1),
@@ -14,7 +18,7 @@ class TestStudentRecord:
             sleep_hours=7.5,
             study_hours=8,
             mood="норм",
-            exam="Математика"
+            exam="Математика",
         )
 
         assert record.student == "Иван Петров"
@@ -25,15 +29,18 @@ class TestStudentRecord:
         assert record.mood == "норм"
         assert record.exam == "Математика"
 
-    def test_from_dict_valid(self):
+    def test_from_dict_valid(self) -> None:
+        """
+        Test creating a `StudentRecord` instance from a dictionary
+        """
         data = {
             "student": "Мария Сидорова",
             "date": "2024-06-02",
             "coffee_spent": "300",
             "sleep_hours": "8.0",
             "study_hours": "6",
-            "mood": "отл",
-            "exam": "Физика"
+            "mood": "зомби",
+            "exam": "Физика",
         }
 
         record = StudentRecord.from_dict(data)
@@ -43,14 +50,22 @@ class TestStudentRecord:
         assert record.coffee_spent == 300
         assert record.sleep_hours == 8.0
         assert record.study_hours == 6
-        assert record.mood == "отл"
+        assert record.mood == "зомби"
         assert record.exam == "Физика"
 
-    @pytest.mark.parametrize("missing_field", [
-        "student", "date", "coffee_spent", "sleep_hours",
-        "study_hours", "mood", "exam"
-    ])
-    def test_from_dict_missing_field(self, missing_field):
+    @pytest.mark.parametrize(
+        "missing_field",
+        ["student", "date", "coffee_spent", "sleep_hours", "study_hours", "mood", "exam"],
+    )
+    def test_from_dict_missing_field(self, missing_field: str) -> None:
+        """
+        Test creating a `StudentRecord` instance from a dictionary with missing fields
+
+        :param missing_field: The missing field name
+        :type missing_field: str
+        :return: nothing
+        :rtype: None
+        """
         data = {
             "student": "Иван Петров",
             "date": "2024-06-01",
@@ -58,31 +73,56 @@ class TestStudentRecord:
             "sleep_hours": "7.5",
             "study_hours": "8",
             "mood": "норм",
-            "exam": "Математика"
+            "exam": "Математика",
         }
         del data[missing_field]
 
         with pytest.raises(KeyError) as excinfo:
             StudentRecord.from_dict(data)
 
-        assert f"Expected required field {missing_field}" in str(excinfo.value)
+        assert f"Expected required field '{missing_field}'" in str(excinfo.value)
 
-    @pytest.mark.parametrize("field,invalid_value,expected_error", [
-        ("date", "2024/06/01", "Incorrect value"),
-        ("coffee_spent", "abc", "Incorrect value"),
-        ("sleep_hours", "xyz", "Incorrect value"),
-        ("study_hours", "7.5", "Incorrect value"),
-    ])
-    def test_from_dict_invalid_values(self, field, invalid_value, expected_error):
-        data = {"student": "Иван Петров", "date": "2024-06-01", "coffee_spent": "450", "sleep_hours": "7.5",
-                "study_hours": "8", "mood": "норм", "exam": "Математика", field: invalid_value}
+    @pytest.mark.parametrize(
+        "field, invalid_value, expected_error",
+        [
+            ("date", "2024/06/01", "Incorrect value"),
+            ("coffee_spent", "abc", "Incorrect value"),
+            ("sleep_hours", "xyz", "Incorrect value"),
+            ("study_hours", "7.5", "Incorrect value"),
+        ],
+    )
+    def test_from_dict_invalid_values(
+        self, field: str, invalid_value: str, expected_error: str
+    ) -> None:
+        """
+        Test creating a `StudentRecord` instance from a dictionary with invalid values
+
+        :param field: The field name
+        :type field: str
+        :param invalid_value: The invalid value
+        :type invalid_value: str
+        :param expected_error: The expected error message
+        :type expected_error: str
+        :return: nothing
+        :rtype: None
+        """
+        data = {
+            "student": "Иван Петров",
+            "date": "2024-06-01",
+            "coffee_spent": "450",
+            "sleep_hours": "7.5",
+            "study_hours": "8",
+            "mood": "норм",
+            "exam": "Математика",
+            field: invalid_value,
+        }
 
         with pytest.raises(ValueError) as excinfo:
             StudentRecord.from_dict(data)
 
         assert expected_error in str(excinfo.value)
 
-    def test_post_init_negative_coffee_spent(self):
+    def test_post_init_negative_coffee_spent(self) -> None:
         with pytest.raises(ValueError) as excinfo:
             StudentRecord(
                 student="Иван Петров",
@@ -91,13 +131,13 @@ class TestStudentRecord:
                 sleep_hours=7.5,
                 study_hours=8,
                 mood="норм",
-                exam="Математика"
+                exam="Математика",
             )
 
-        assert "coffee_spent not be negative" in str(excinfo.value)
+        assert "`coffee_spent` not be negative" in str(excinfo.value)
 
     @pytest.mark.parametrize("sleep_hours", [-1.0, 24.5, 25.0])
-    def test_post_init_invalid_sleep_hours(self, sleep_hours):
+    def test_post_init_invalid_sleep_hours(self, sleep_hours: float) -> None:
         with pytest.raises(ValueError) as excinfo:
             StudentRecord(
                 student="Иван Петров",
@@ -106,12 +146,15 @@ class TestStudentRecord:
                 sleep_hours=sleep_hours,
                 study_hours=8,
                 mood="норм",
-                exam="Математика"
+                exam="Математика",
             )
 
-        assert "sleep_hours must be in range [0, 24]" in str(excinfo.value)
+        assert "`sleep_hours` must be in range [0, 24]" in str(excinfo.value)
 
-    def test_post_init_negative_study_hours(self):
+    def test_post_init_negative_study_hours(self) -> None:
+        """
+        Test `post_init` method with negative study_hours
+        """
         with pytest.raises(ValueError) as excinfo:
             StudentRecord(
                 student="Иван Петров",
@@ -120,12 +163,15 @@ class TestStudentRecord:
                 sleep_hours=7.5,
                 study_hours=-5,
                 mood="норм",
-                exam="Математика"
+                exam="Математика",
             )
 
-        assert "study_hours not be negative" in str(excinfo.value)
+        assert "`study_hours` not be negative" in str(excinfo.value)
 
-    def test_edge_case_zero_values(self):
+    def test_edge_case_zero_values(self) -> None:
+        """
+        Test edge cases with zero values
+        """
         record = StudentRecord(
             student="Петр Иванов",
             date=datetime(2024, 6, 1),
@@ -133,14 +179,17 @@ class TestStudentRecord:
             sleep_hours=0,
             study_hours=0,
             mood="норм",
-            exam="История"
+            exam="История",
         )
 
         assert record.coffee_spent == 0
         assert record.sleep_hours == 0
         assert record.study_hours == 0
 
-    def test_edge_case_max_values(self):
+    def test_edge_case_max_values(self) -> None:
+        """
+        Test edge cases with maximum values
+        """
         record = StudentRecord(
             student="Анна Петрова",
             date=datetime(2024, 6, 1),
@@ -148,7 +197,7 @@ class TestStudentRecord:
             sleep_hours=24.0,
             study_hours=24,
             mood="норм",
-            exam="Литература"
+            exam="Литература",
         )
 
         assert record.coffee_spent == 10000
@@ -158,13 +207,19 @@ class TestStudentRecord:
 
 class TestStudentStatistics:
 
-    def test_create_empty_statistics(self):
+    def test_create_empty_statistics(self) -> None:
+        """
+        Test creating an empty `StudentStatistics` instance
+        """
         stats = StudentStatistics("Иван Петров")
 
         assert stats.student == "Иван Петров"
         assert stats.coffee_spent_values == []
 
-    def test_add_record(self):
+    def test_add_record(self) -> None:
+        """
+        Test adding a record to `StudentStatistics`
+        """
         stats = StudentStatistics("Иван Петров")
 
         record1 = StudentRecord(
@@ -174,7 +229,7 @@ class TestStudentStatistics:
             sleep_hours=7.5,
             study_hours=8,
             mood="норм",
-            exam="Математика"
+            exam="Математика",
         )
 
         record2 = StudentRecord(
@@ -184,7 +239,7 @@ class TestStudentStatistics:
             sleep_hours=6.5,
             study_hours=10,
             mood="устал",
-            exam="Математика"
+            exam="Математика",
         )
 
         stats.add_record(record1)
@@ -193,7 +248,10 @@ class TestStudentStatistics:
         stats.add_record(record2)
         assert stats.coffee_spent_values == [450, 500]
 
-    def test_median_coffee_with_single_value(self):
+    def test_median_coffee_with_single_value(self) -> None:
+        """
+        Test `median_coffee` with a single value
+        """
         stats = StudentStatistics("Иван Петров")
 
         record = StudentRecord(
@@ -203,13 +261,16 @@ class TestStudentStatistics:
             sleep_hours=7.5,
             study_hours=8,
             mood="норм",
-            exam="Математика"
+            exam="Математика",
         )
 
         stats.add_record(record)
         assert stats.median_coffee == 450
 
-    def test_median_coffee_with_multiple_values(self):
+    def test_median_coffee_with_multiple_values(self) -> None:
+        """
+        Test `median_coffee` with multiple values
+        """
         stats = StudentStatistics("Иван Петров")
         values = [450, 500, 350, 600, 550]
 
@@ -221,13 +282,16 @@ class TestStudentStatistics:
                 sleep_hours=7.5,
                 study_hours=8,
                 mood="норм",
-                exam="Математика"
+                exam="Математика",
             )
             stats.add_record(record)
 
         assert stats.median_coffee == 500
 
-    def test_median_coffee_even_number_of_values(self):
+    def test_median_coffee_even_number_of_values(self) -> None:
+        """
+        Test `median_coffee` with even number of values
+        """
         stats = StudentStatistics("Иван Петров")
         values = [450, 500, 350, 600]
 
@@ -239,13 +303,16 @@ class TestStudentStatistics:
                 sleep_hours=7.5,
                 study_hours=8,
                 mood="норм",
-                exam="Математика"
+                exam="Математика",
             )
             stats.add_record(record)
 
         assert stats.median_coffee == 475
 
-    def test_median_coffee_returns_int(self):
+    def test_median_coffee_returns_int(self) -> None:
+        """
+        Test `median_coffee` returns an integer
+        """
         stats = StudentStatistics("Иван Петров")
 
         record = StudentRecord(
@@ -255,7 +322,7 @@ class TestStudentStatistics:
             sleep_hours=7.5,
             study_hours=8,
             mood="норм",
-            exam="Математика"
+            exam="Математика",
         )
 
         stats.add_record(record)
@@ -264,7 +331,10 @@ class TestStudentStatistics:
         assert isinstance(result, int)
         assert result == 450
 
-    def test_add_multiple_students_separately(self):
+    def test_add_multiple_students_separately(self) -> None:
+        """
+        Test adding multiple students separately
+        """
         ivan_stats = StudentStatistics("Иван Петров")
         maria_stats = StudentStatistics("Мария Сидорова")
 
@@ -275,7 +345,7 @@ class TestStudentStatistics:
             sleep_hours=7.5,
             study_hours=8,
             mood="норм",
-            exam="Математика"
+            exam="Математика",
         )
 
         ivan_record2 = StudentRecord(
@@ -285,7 +355,7 @@ class TestStudentStatistics:
             sleep_hours=6.5,
             study_hours=10,
             mood="устал",
-            exam="Математика"
+            exam="Математика",
         )
 
         maria_record1 = StudentRecord(
@@ -295,7 +365,7 @@ class TestStudentStatistics:
             sleep_hours=8.0,
             study_hours=5,
             mood="отл",
-            exam="Физика"
+            exam="Физика",
         )
 
         ivan_stats.add_record(ivan_record1)
@@ -307,7 +377,10 @@ class TestStudentStatistics:
         assert ivan_stats.coffee_spent_values == [450, 500]
         assert maria_stats.coffee_spent_values == [200]
 
-    def test_realistic_scenario(self):
+    def test_realistic_scenario(self) -> None:
+        """
+        Test a realistic scenario with multiple students and records
+        """
         stats = StudentStatistics("Алексей Смирнов")
 
         daily_data = [
@@ -326,7 +399,7 @@ class TestStudentStatistics:
                 sleep_hours=sleep,
                 study_hours=study,
                 mood="норм",
-                exam="Математика"
+                exam="Математика",
             )
             stats.add_record(record)
 

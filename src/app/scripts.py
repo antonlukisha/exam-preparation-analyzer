@@ -7,5 +7,5 @@ def lint() -> None:
     """
     subprocess.run(["black", "."])
     subprocess.run(["isort", "."])
-    subprocess.run(["ruff", "check", "."])
+    subprocess.run(["ruff", "check", ".", "--fix"])
     subprocess.run(["mypy", "."])

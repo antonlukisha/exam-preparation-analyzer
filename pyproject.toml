@@ -63,16 +63,17 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "9.0"
-addopts = "-v --strict-config --strict-markers --cov=app --cov-report=term-missing --cov-report=html --tb=short -ra"
+addopts = "-v --strict-config --cov=app --cov-report=term-missing --cov-report=html --tb=short -ra"
 testpaths = ["tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
+pythonpath = ["src"]
 
 [tool.coverage.run]
 source = ["app"]
 omit = ["*/__init__.py", "*/__main__.py", "app/scripts.py", "tests/*"]
-parallel = true
+disable_warnings = ["module-not-measured"]
 
 [tool.coverage.report]
 fail_under = 80
