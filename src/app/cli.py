@@ -1,6 +1,7 @@
 import sys
 from argparse import ArgumentParser, Namespace
 
+from app.config import DATA_PATH
 from .logging import get_logger, setup_logging
 from .reporters import ReportGenerator
 from .utils import read_csv_files, validate_files_exist
@@ -20,7 +21,7 @@ def parse_arguments() -> Namespace:
         "--files",
         nargs="+",
         required=True,
-        help="List of .csv files to analyze (can be multiple files separated by spaces)",
+        help=f"List of .csv files to analyze (can be multiple files separated by spaces and files must be looked up in the `{str(DATA_PATH)}` directory)",
     )
     parser.add_argument(
         "--report",
@@ -46,7 +47,7 @@ def main() -> None:
         )
 
         logger.debug(f"Checking files {', '.join(args.files)}...")
-        files = validate_files_exist(args.files)
+        files = validate_files_exist(list(DATA_PATH / path for path in args.files))
 
         logger.info("Reading files...")
         data = read_csv_files(files)
