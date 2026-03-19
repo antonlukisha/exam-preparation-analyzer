@@ -60,6 +60,8 @@ python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
+warn_unused_ignores = true
+warn_no_return = true
 
 [tool.pytest.ini_options]
 minversion = "9.0"
@@ -87,4 +89,5 @@ exclude_lines = [
     "if (0|False):",
     "except ImportError",
     "if typing.TYPE_CHECKING:",
+    "@(abc\\.)?abstractmethod",
 ]
