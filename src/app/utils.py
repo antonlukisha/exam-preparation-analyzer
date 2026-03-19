@@ -113,7 +113,7 @@ def read_csv_file(file_path: str | Path) -> list[dict]:
                 data.append(row)
 
             except Exception as e:
-                logger.warning(f"Error processing row {row_num} файла `{path.name}`: {e}")
+                logger.warning(f"Error processing row {row_num} on file `{path.name}`: {e}")
                 continue
 
     logger.debug(f"Loaded {len(data)} records from file `{path.name}`")
